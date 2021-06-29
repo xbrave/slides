@@ -15,14 +15,13 @@ highlighter: shiki
 </a>
 
 ---
-
+ 
 # 为什么要引入模块化
-
-先问为什么，在问是不是
+先问为什么，再问是不是
 
 - 变量和方法不容易维护，容易污染全局作用域
 - 依赖的环境主观逻辑偏重，代码较多就会比较复杂
-- 大型项目资源难以维护，特别是多人合作的情况下，资源的引入会让人奔溃
+- 大型项目资源难以维护，特别是多人合作的情况下
 - 复用性较差，多人合作容易相互干扰
 
 ---
@@ -35,6 +34,10 @@ highlighter: shiki
 4. 加载对应的以`/`, `./`, `../`开头的文件夹，先查找文件夹下的`package.json`，如果`package.json`定义了"main",则加载"main"对应的内容，没有则寻找对应的文件夹下的index文件，然后按照第三步的加载文件顺序依次查找并加载
 5. 加载对应的`node_modules`文件夹下的内容
 6. 抛出"not found"错误
+
+Read More: 
+* [Webpack Module Resolution](https://webpack.js.org/concepts/module-resolution/)
+* [enhanced-resolve](https://github.com/webpack/enhanced-resolve)
 
 ---
 
@@ -62,7 +65,7 @@ highlighter: shiki
 ---
 
 # MyOwnModule Class
-参考上述[Module Caching](#module-caching)所描述的module结构和[源码](https://github.com/nodejs/node/blob/910efc2d9a69ac32205d64e4835df481fc057f02/lib/internal/modules/cjs/loader.js#L168)我们先定义一个MyOwnModule类:
+参考缓存中所描述的module结构和[源码](https://github.com/nodejs/node/blob/910efc2d9a69ac32205d64e4835df481fc057f02/lib/internal/modules/cjs/loader.js#L168)我们先定义一个MyOwnModule类:
 ```js
 const path = require('path');
 
@@ -84,7 +87,7 @@ function MyOwnModule(id = '') {
 2. 调用内部的`_loader()`方法
 3. 通过 `_resolveFilename()`方法获取相应的文件绝对路径
 4. 然后从缓存中找模块是否已加载，加载了直接返回对应的缓存内容，否则新生成一个Module实例，再返回对应的加载结果
-```js {1|6|8|9||all}
+```js {1|3|6|8-11|all}
 MyOwnModule._cache = Object.create(null);
 MyOwnModule.prototype.require = function(id) {
   return MyOwnModule._load(id);
@@ -104,7 +107,7 @@ MyOwnModule._load = function(request) {
 `_resolveFilename`的方法在源码中比较复杂，这里我们简单实现一下，主要做的工作和之前说到加载顺序一致:
 1. 获取文件的resolve路径，并检测有没有文件后缀
 2. 如果有后缀直接返回，没有的按照`_extensions`定义的顺序依次寻找，找到的直接返回对应的路径
-```js {5|8|all}
+```js {2-3|8|all}
 MyOwnModule._resolveFilename = function(request) {
   const filename = path.resolve(request);
   const ext = path.extname(filename);
