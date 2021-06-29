@@ -1,0 +1,17 @@
+{
+  "name": "slides",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/xbrave/slides.git",
+  "author": "xbrave <sunzy1993@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "slidev",
+    "build": "slidev build",
+    "export": "slidev export"
+  }, 
+  "devDependencies": {
+    "@slidev/cli": "^0.22.1",
+    "@slidev/theme-seriph": "^0.19.1"
+  }
+}
