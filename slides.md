@@ -97,6 +97,7 @@ MyOwnModule._load = function(request) {
   const cachedModule = MyOwnModule._cache[filename];
   if (cachedModule !== undefined) return cachedModule.exports;
   const module = new MyOwnModule(filename);
+  MyOwnModule._cache[filename] = module;
   module.load(filename);
   return module.exports;
 }
@@ -136,9 +137,26 @@ MyOwnModule.prototype.load = function(filename) {
 
 ---
 
+# [vm.runInThisContext(code[, options])](https://nodejs.org/api/vm.html#vm_vm_runinthiscontext_code_options)
+### 官方释义:
+vm.runInThisContext() compiles code, runs it within the context of the current global and returns the result. Running code does not have access to local scope, but does have access to the current global object.
+### 官方demo:
+```js
+const vm = require('vm');
+let localVar = 'initial value';
+
+const vmResult = vm.runInThisContext('localVar = "vm";');
+console.log(`vmResult: '${vmResult}', localVar: '${localVar}'`);
+
+const evalResult = eval('localVar = "eval";');
+console.log(`evalResult: '${evalResult}', localVar: '${localVar}'`);
+```
+---
+
 # `.js`文件后缀
-对`.js`文件后缀的处理,主要是调用了[`vm.runInThisContext`](https://nodejs.org/api/vm.html#vm_script_runinthiscontext_options)方法将拼接好的字符串代码转换为实际代码，并在最外层包裹了一层，将对应的五个变量注入了模块内部。相关代码如下:
-```js {2|7|12-16|18|all}
+对`.js`文件后缀的处理,主要是调用了[`vm.runInThisContext`]()方法将拼接好的字符串代码转换为实际代码，并在最外层包裹了一层，将对应的五个变量注入了模块内部。相关代码如下:
+```js {3|8|13-17|19|all}
+MyOwnModule._extensions = Object.create(null);
 MyOwnModule._extensions['.js'] = function(module, filename) {
   const fileContent = fs.readFileSync(filename, 'utf-8');
   module._compile(fileContent, filename);
@@ -171,6 +189,14 @@ MyOwnModule._extensions['.json'] = function(module, filename) {
 ```
 ---
 
-# 总结
+## 总结
 1. `Node.js`的`CommonJS module`并没有什么特别的地方，主要难点在于对于`.js`文件的处理方式和`vm.runInThisContext`的理解
 2. 每个模块对应的`exports`,`require`,`module`, `__filename`, `__dirname`都不是全局变量，而是模块加载的时候注入的
+
+<br />
+<br />
+<br />
+
+## 参考
+1. [Module:CommonJS modules official document](https://nodejs.org/api/modules.html)
+2. [Node.js loader.js Source Code](https://github.com/nodejs/node/blob/910efc2d9a69ac32205d64e4835df481fc057f02/lib/internal/modules/cjs/loader.js)
