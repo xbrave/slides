@@ -1,18 +1,14 @@
 {
   "name": "slides",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/xbrave/slides.git",
-  "author": "xbrave <sunzy1993@hotmail.com>",
-  "license": "MIT",
+  "private": true,
   "scripts": {
-    "dev": "slidev",
     "build": "slidev build",
+    "dev": "slidev --open",
     "export": "slidev export"
   },
-  "devDependencies": {
-    "@slidev/cli": "^0.22.1",
-    "@slidev/theme-seriph": "^0.19.1",
-    "playwright-chromium": "^1.12.3"
+  "dependencies": {
+    "@slidev/cli": "^0.34.3",
+    "@slidev/theme-default": "*",
+    "@slidev/theme-seriph": "*"
   }
 }
