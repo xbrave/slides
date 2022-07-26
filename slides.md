@@ -5,6 +5,7 @@ theme: seriph
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://source.unsplash.com/collection/94734566/1920x1080
 highlighter: shiki
+titleTemplate: '%s'
 ---
 
 # monorepo 2.0
@@ -54,6 +55,14 @@ export type IOptions = {
 ```
 
 [Configuration](https://dtstack.github.io/ko/docs/current/configuration)
+
+---
+
+# 选型
+
+1. 前置 VS 懒加载
+2. 底层语言是前端基建的未来
+3. dev & build 输出产物应共用一套逻辑
 
 ---
 
@@ -118,11 +127,17 @@ exec eslint with 704 files cost 23.60s
 
 ---
 
-# [ko-lint-config](https://github.com/DTStack/ko/tree/master/packages/ko-lint-config)
+# [ko-lint-config](https://github.com/DTStack/ko/tree/master/packages/ko-lint-config) @liuyi
 
 - 定义了 prettier,eslint,stylelint 相关规则
 - eslint 规则 遵循[Code Style Guide](https://github.com/DTStack/Code-Style-Guide)
 - 可自行升级，不受 ko 相关版本迭代升级影响
+
+# 全局配置 VS 自定义配置
+
+1. 很多人希望更简洁的配置，但是少部分人则需要更多的细节配置
+2. 全局配置应当有较强的约束性和简洁性
+3. 自定义配置需要更高的自由度
 
 ---
 
@@ -131,14 +146,17 @@ exec eslint with 704 files cost 23.60s
 包含以下 CI:
 
 - git pre-commit hooks(lint-staged)
+  - 增加了 eslint 和 stylelint 的 fix
+  - 对不同文件进行了分别处理
 - npm scripts
+
+  - 通过 turbo 定义相关 pipeline
+  - 增加`pnpm lint`用于检测，增加`pnpm lint:fix`用于自动修复
+
 - gitlab ci
+  - 根据 merge 源分支名称（CI_MERGE_REQUEST_SOURCE_BRANCH_NAME）来匹配范围 @qiming
+  - 增加了 eslint, prettier, stylelint, tsc, test 五项内容的检查
 
-相关命令:
+统一 ci 调用到`scripts/ci`目录,相关逻辑可在此处修改
 
-```bash
-# Run prettier,eslint,stylelint via turbo pipelines
-pnpm lint
-# Run prettier:fix,eslint:fix,stylelint:fix via turbo pipelines
-pnpm lint:fix
-```
+---
